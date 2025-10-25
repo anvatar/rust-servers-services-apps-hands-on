@@ -3,4 +3,7 @@ name = "scenario1"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = ["http","httpserver","tcpclient","tcpserver"]
+
 [dependencies]
