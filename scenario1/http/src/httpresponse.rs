@@ -73,3 +73,18 @@ impl<'a> HttpResponse<'a> {
         }
     }
 }
+
+impl<'a> From<HttpResponse<'a>> for String {
+    fn from(res: HttpResponse<'a>) -> String {
+        let res1 = res.clone(); // Cloning is necessary because res.body is moved when unwrap() is called
+        format!(
+            "{} {} {}\r\n{}Content-Length: {}\r\n\r\n{}",
+            &res1.version(), // It seems ok not to prepend &
+            &res1.status_code(),
+            &res1.status_text(),
+            &res1.headers(),
+            &res.body.unwrap().len(),
+            &res1.body(),
+        )
+    }
+}
