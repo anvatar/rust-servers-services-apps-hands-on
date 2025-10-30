@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::io::{Write, Result};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct HttpResponse<'a> {
@@ -47,5 +48,28 @@ impl<'a> HttpResponse<'a> {
         response.body = body;
 
         response
+    }
+    pub fn version(&self) -> &str { // It might be more accurate to return &'a str when returning fields directly
+        self.version
+    }
+    pub fn status_code(&self) -> &str {
+        self.status_code
+    }
+    pub fn status_text(&self) -> &str {
+        self.status_text
+    }
+    pub fn headers(&self) -> String {
+        let map = self.headers.clone().unwrap(); // Without cloning, self.headers can't be used later
+        let mut header_string = "".into();
+        for (k, v) in map.iter() {
+            header_string = format!("{}{}:{}\r\n", header_string, k, v)
+        }
+        header_string
+    }
+    pub fn body(&self) -> &str {
+        match &self.body {
+            Some(b) => b.as_str(),
+            None => "",
+        }
     }
 }
