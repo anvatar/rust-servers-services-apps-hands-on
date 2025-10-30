@@ -49,6 +49,12 @@ impl<'a> HttpResponse<'a> {
 
         response
     }
+    pub fn send_response(&self, write_stream: &mut impl Write) -> Result<()> {
+        let res = self.clone(); // Without cloning, self can't be used later
+        let response_string = String::from(res);
+        let _ = write!(write_stream, "{}", response_string);
+        Ok(())
+    }
     pub fn version(&self) -> &str { // It might be more accurate to return &'a str when returning fields directly
         self.version
     }
