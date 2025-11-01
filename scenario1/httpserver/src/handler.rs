@@ -1,4 +1,5 @@
 use http::{httprequest::HttpRequest, httpresponse::HttpResponse};
+use std::collections::HashMap;
 use std::{env, fs};
 
 pub trait Handler {
@@ -17,5 +18,31 @@ pub struct PageNotFoundHandler;
 impl Handler for PageNotFoundHandler {
     fn handle(_req: &HttpRequest) -> HttpResponse {
         HttpResponse::new("404", None, Self::load_file("404.html"))
+    }
+}
+
+pub struct StaticPageHandler;
+impl Handler for StaticPageHandler {
+    fn handle(req: &HttpRequest) -> HttpResponse {
+        let http::httprequest::Resource::Path(s) = &req.resource;
+        let route: Vec<&str> = s.split("/").collect();
+        match route[1] {
+            "" => HttpResponse::new("200", None, Self::load_file("index.html")),
+            "health" => HttpResponse::new("200", None, Self::load_file("health.html")),
+            path => match Self::load_file(path) {
+                Some(contents) => {
+                    let mut map: HashMap<&str, &str> = HashMap::new();
+                    if path.ends_with(".css") {
+                        map.insert("Content-Type", "text/css");
+                    } else if path.ends_with(".js") {
+                        map.insert("Content-Type", "text/javascript");
+                    } else {
+                        map.insert("Content-Type", "text/html");
+                    }
+                    HttpResponse::new("200", Some(map), Some(contents))
+                }
+                None => HttpResponse::new("404", None, Self::load_file("404.html")),
+            },
+        }
     }
 }
