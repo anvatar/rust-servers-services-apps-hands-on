@@ -65,7 +65,7 @@ impl<'a> HttpResponse<'a> {
         self.status_text
     }
     pub fn headers(&self) -> String {
-        let map = self.headers.clone().unwrap(); // Without cloning, self.headers can't be used later
+        let map = self.headers.clone().unwrap_or_default(); // Without cloning, self.headers can't be used later
         let mut header_string = "".into();
         for (k, v) in map.iter() {
             header_string = format!("{}{}:{}\r\n", header_string, k, v)
@@ -89,7 +89,7 @@ impl<'a> From<HttpResponse<'a>> for String {
             &res1.status_code(),
             &res1.status_text(),
             &res1.headers(),
-            &res.body.unwrap().len(),
+            &res.body.unwrap_or_default().len(),
             &res1.body(),
         )
     }
