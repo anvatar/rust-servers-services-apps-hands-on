@@ -155,4 +155,11 @@ mod tests {
         let http_string_expected = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\nContent-Length: 33\r\n\r\nItem was shipped on 21st Dec 2020";
         assert_eq!(http_string_expected, http_string_actual);
     }
+    #[test]
+    fn test_http_response_creation_for_default() {
+        let response = HttpResponse::default();
+        let http_string_actual = String::from(response);
+        let http_string_expected = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n";
+        assert_eq!(http_string_expected, http_string_actual);
+    }
 }
