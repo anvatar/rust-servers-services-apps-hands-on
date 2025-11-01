@@ -12,3 +12,10 @@ pub trait Handler {
         contents.ok()
     }
 }
+
+pub struct PageNotFoundHandler;
+impl Handler for PageNotFoundHandler {
+    fn handle(_req: &HttpRequest) -> HttpResponse {
+        HttpResponse::new("404", None, Self::load_file("404.html"))
+    }
+}
