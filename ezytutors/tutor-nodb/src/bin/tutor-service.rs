@@ -1,3 +1,5 @@
+#[path = "../handlers.rs"]
+mod handlers;
 #[path = "../state.rs"]
 mod state;
 
