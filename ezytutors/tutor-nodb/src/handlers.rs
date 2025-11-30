@@ -84,4 +84,28 @@ mod tests {
             posted_time: None,
         }
     }
+
+    #[actix_rt::test]
+    async fn get_courses_for_tutor_no_content() {
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            courses: Mutex::new(vec![]),
+        });
+        let tutor_id: web::Path<(i32,)> = web::Path::from((1,));
+        let resp = get_courses_for_tutor(app_state, tutor_id).await;
+        assert_eq!(resp.status(), StatusCode::NO_CONTENT);
+    }
+
+    #[actix_rt::test]
+    async fn get_courses_for_tutor_success() {
+        let app_state = web::Data::new(AppState {
+            health_check_response: "".to_string(),
+            visit_count: Mutex::new(0),
+            courses: Mutex::new(vec![make_test_course()]),
+        });
+        let tutor_id: web::Path<(i32,)> = web::Path::from((1,));
+        let resp = get_courses_for_tutor(app_state, tutor_id).await;
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
 }
