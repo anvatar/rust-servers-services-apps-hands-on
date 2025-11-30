@@ -35,8 +35,27 @@ pub async fn new_course(
     HttpResponse::Ok().json("Added course")
 }
 
-pub async fn get_courses_for_tutor() -> HttpResponse {
-    todo!()
+pub async fn get_courses_for_tutor(
+    app_state: web::Data<AppState>,
+    params: web::Path<(i32,)>,
+) -> HttpResponse {
+    let tutor_id = params.0;
+
+    let filtered_courses = app_state
+        .courses
+        .lock()
+        .unwrap()
+        .clone()
+        .into_iter()
+        .filter(|course| course.tutor_id == tutor_id)
+        .collect::<Vec<Course>>();
+
+    if filtered_courses.is_empty() {
+        // .to_string() is not needed
+        HttpResponse::NoContent().json("No courses found for tutor".to_string())
+    } else {
+        HttpResponse::Ok().json(filtered_courses)
+    }
 }
 
 #[cfg(test)]
