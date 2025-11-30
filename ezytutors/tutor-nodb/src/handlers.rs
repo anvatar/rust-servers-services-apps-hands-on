@@ -58,6 +58,10 @@ pub async fn get_courses_for_tutor(
     }
 }
 
+pub async fn get_course_detail() -> HttpResponse {
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
