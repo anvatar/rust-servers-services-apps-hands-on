@@ -66,12 +66,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn post_course_test() {
-        let course = web::Json(Course {
-            tutor_id: 1,
-            course_name: "Hello, this is test course".into(),
-            course_id: None,
-            posted_time: None,
-        });
+        let course = web::Json(make_test_course());
         let app_state = web::Data::new(AppState {
             health_check_response: "".to_string(),
             visit_count: Mutex::new(0),
@@ -79,5 +74,14 @@ mod tests {
         });
         let resp = new_course(course, app_state).await;
         assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    fn make_test_course() -> Course {
+        Course {
+            tutor_id: 1,
+            course_name: "Hello, this is test course".into(),
+            course_id: None,
+            posted_time: None,
+        }
     }
 }
