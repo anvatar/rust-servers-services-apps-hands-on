@@ -35,6 +35,10 @@ pub async fn new_course(
     HttpResponse::Ok().json("Added course")
 }
 
+pub async fn get_courses_for_tutor() -> HttpResponse {
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
