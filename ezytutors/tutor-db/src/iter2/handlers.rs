@@ -36,6 +36,7 @@ pub async fn post_new_course(
 mod tests {
     use super::*;
     use actix_web::http::StatusCode;
+    use actix_web::web;
     use chrono::NaiveDate;
     use dotenv::dotenv;
     use sqlx::PgPool;
@@ -44,29 +45,26 @@ mod tests {
 
     #[actix_rt::test]
     async fn get_courses_for_tutor_success() {
-        dotenv().ok();
-        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
-        let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state = web::Data::new(AppState {
-            health_check_response: "".to_string(),
-            visit_count: Mutex::new(0),
-            db: db_pool,
-        });
+        let app_state = make_app_state().await;
         let tutor_id: web::Path<(i32,)> = web::Path::from((1,));
         let resp = get_courses_for_tutor(app_state, tutor_id).await;
         assert_eq!(resp.status(), StatusCode::OK);
     }
 
-    #[actix_rt::test]
-    async fn get_course_detail_success() {
+    async fn make_app_state() -> web::Data<AppState> {
         dotenv().ok();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
         let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state = web::Data::new(AppState {
+        web::Data::new(AppState {
             health_check_response: "".to_string(),
             visit_count: Mutex::new(0),
             db: db_pool,
-        });
+        })
+    }
+
+    #[actix_rt::test]
+    async fn get_course_detail_success() {
+        let app_state = make_app_state().await;
         let params: web::Path<(i32, i32)> = web::Path::from((1, 2));
         let resp = get_course_details(app_state, params).await;
         assert_eq!(resp.status(), StatusCode::OK);
@@ -74,14 +72,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn post_course_success() {
-        dotenv().ok();
-        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
-        let db_pool = PgPool::connect(&database_url).await.unwrap();
-        let app_state = web::Data::new(AppState {
-            health_check_response: "".to_string(),
-            visit_count: Mutex::new(0),
-            db: db_pool,
-        });
+        let app_state = make_app_state().await;
         let course_param = web::Json(Course {
             tutor_id: 1,
             course_id: 1,
