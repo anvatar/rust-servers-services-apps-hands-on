@@ -82,7 +82,7 @@ mod tests {
         let app_state = make_app_state().await;
         let course_param = web::Json(Course {
             tutor_id: 1,
-            course_id: 1,
+            course_id: 3,
             course_name: "This is the next course".into(),
             posted_time: NaiveDate::from_ymd_opt(2020, 9, 17)
                 .unwrap()
