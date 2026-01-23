@@ -1,5 +1,6 @@
 use super::models::Course;
 use super::state::AppState;
+use crate::db_access::*;
 use actix_web::{HttpResponse, web};
 
 pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpResponse {
@@ -12,24 +13,30 @@ pub async fn health_check_handler(app_state: web::Data<AppState>) -> HttpRespons
 }
 
 pub async fn get_courses_for_tutor(
-    _app_state: web::Data<AppState>,
-    _params: web::Path<(i32,)>,
+    app_state: web::Data<AppState>,
+    params: web::Path<(i32,)>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json("success")
+    let tutor_id = params.0;
+    let courses = get_courses_for_tutor_db(&app_state.db, tutor_id).await;
+    HttpResponse::Ok().json(courses)
 }
 
 pub async fn get_course_details(
-    _app_state: web::Data<AppState>,
-    _params: web::Path<(i32, i32)>,
+    app_state: web::Data<AppState>,
+    params: web::Path<(i32, i32)>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json("success")
+    let (tutor_id, course_id) = (params.0, params.1);
+    let course = get_course_details_db(&app_state.db, tutor_id, course_id).await;
+    HttpResponse::Ok().json(course)
 }
 
 pub async fn post_new_course(
-    _new_course: web::Json<Course>,
-    _app_state: web::Data<AppState>,
+    new_course: web::Json<Course>,
+    app_state: web::Data<AppState>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json("success")
+    let course = post_new_course_db(&app_state.db, new_course.into()).await;
+
+    HttpResponse::Ok().json(course)
 }
 
 #[cfg(test)]
